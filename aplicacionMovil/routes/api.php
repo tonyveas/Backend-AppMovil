@@ -16,3 +16,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('mascota','MascotaController@registrarMascota');
+Route::get('mascotas','MascotaController@get_all_mascotas');
+Route::get('tipos','TipoMascotaController@get_all_tipos');
+Route::get('razas','RazaMascotaController@get_all_razas');
+Route::get('usuarios','UsuarioController@get_all_usuarios');
+Route::put('estadomascota','MascotaController@changeStateMascota');
+Route::post('login','UsuarioController@login');
