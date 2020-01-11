@@ -107,7 +107,10 @@ class MascotaController extends Controller
 
 
     public function get_all_mascotas(){
-        $mascotas = Mascota::all();
+        $mascotas = Mascota::select('mascotas.*',"tipo_mascotas.*","raza_mascotas.*","usuarios.*")
+        ->join("tipo_mascotas","tipo_mascotas.id_tipo_mascota","=","mascotas.tipo")
+        ->join("raza_mascotas","raza_mascotas.id_raza","=","mascotas.raza")
+        ->join("usuarios","usuarios.id_usuario","=","mascotas.dueno")->get();
         return response()->json($mascotas);
     }
 

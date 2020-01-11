@@ -85,8 +85,12 @@ class UsuarioController extends Controller
 
     public function login(Request $request){
         try{
-            $user = Usuario::where('usuario','=',$request->get('usuario'))->where('contrasena','=',$request->get('contrasena'))->exists();
-            return response()->json(['log'=>$user],200);
+            $user = Usuario::where('usuario','=',$request->get('usuario'))->where('contrasena','=',$request->get('contrasena'))->first();
+            if($user!=null){
+                return response()->json($user);
+            }
+
+            return response()->json(['log'=>'El Usuario ingresado no existe!'],401);
 
         }catch(Exception $e){
             return response()->json(['log'=>$e],500);
