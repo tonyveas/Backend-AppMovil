@@ -107,14 +107,31 @@ class MascotaController extends Controller
 
 
     public function get_all_mascotas(){
-        $mascotas = Mascota::select('mascotas.*',"tipo_mascotas.*","raza_mascotas.*","usuarios.*")
-        ->join("tipo_mascotas","tipo_mascotas.id_tipo_mascota","=","mascotas.tipo")
-        ->join("raza_mascotas","raza_mascotas.id_raza","=","mascotas.raza")
-        ->join("usuarios","usuarios.id_usuario","=","mascotas.dueno")->get();
+        $mascotas =self::auxGetMascotas()->get();
         return response()->json($mascotas);
     }
 
-    public function changeStateMascota(Request $request){
+
+    public function getMascotasPerdidas(){
+        $mascotas = self::auxGetMascotas()->where('estado',0)
+        ->get();
+        return response()->json($mascotas);
+    }
+
+    public function getMascotasAdopcion(){
+        $mascotas = self::auxGetMascotas()->where('estado',1)
+        ->get();
+        return response()->json($mascotas);
+    }
+
+    public function auxGetMascotas(){
+        return Mascota::select('mascotas.*',"tipo_mascotas.*","raza_mascotas.*","usuarios.*")
+        ->join("tipo_mascotas","tipo_mascotas.id_tipo_mascota","=","mascotas.tipo")
+        ->join("raza_mascotas","raza_mascotas.id_raza","=","mascotas.raza")
+        ->join("usuarios","usuarios.id_usuario","=","mascotas.dueno");
+    }
+
+    public function ReportMascotaPerdida(Request $request){
         try{
             $actualizado = Mascota::where('id_mascota','=',$request->get('id_mascota'))->update(['estado'=>$request->get('estado')]);
             if($actualizado ==1){
