@@ -26,3 +26,19 @@ Route::get('allrazas','RazaMascotaController@get_all_razas');
 Route::get('allusuarios','UsuarioController@get_all_usuarios');
 Route::put('reportarperdida','MascotaController@ReportMascotaPerdida');
 Route::post('login','UsuarioController@login');
+
+/*API Usuario*/
+
+
+/*API RazaMascota*/
+
+
+/* API TipoMascota*/
+
+
+/*Api Mascota*/
+    Route::get('/consultarMascotas','MascotaController@consultarMascotas');
+    Route::get('/consultarMascotaPorId','MascotaController@consultarMascotaPorId');
+    Route::get('/consultarMisMascotas','MascotaController@consultarMisMascotas');
+    Route::put('/registrarAdopcion','MascotaController@registrarAdopcion');
+    Route::put('/realizarAdopcion','MascotaController@realizarAdopcion');

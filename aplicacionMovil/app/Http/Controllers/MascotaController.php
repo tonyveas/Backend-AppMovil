@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mascota;
 use Illuminate\Http\Request;
+use DB;
+
 
 class MascotaController extends Controller
 {
@@ -60,6 +62,57 @@ class MascotaController extends Controller
         //
     }
 
+
+    public function consultarMascotas(Request $request){
+        $mascotas = DB::table('mascotas')
+        ->join('raza_mascotas','mascotas.raza','=','raza_mascotas.id_raza')
+        ->join('tipo_mascotas','mascotas.tipo','=','tipo_mascotas.id_tipo_mascota')
+        ->select('mascotas.id_mascota','mascotas.nombre','mascotas.genero','mascotas.descripcion','mascotas.edad','mascotas.estado','tipo_mascotas.tipo','raza_mascotas.raza')
+        ->where('mascotas.tipo','=',$request->input('tipo'))->get();
+        return response()->json($mascotas);
+    }
+
+    public function consultarMascotaPorId(Request $request){
+        $mascota = Mascota::find($request->input('id_mascota'));
+        return response()->json($mascota);
+    }
+
+    public function consultarMisMascotas(Request $request){
+        $mascotas = DB::table('mascotas')
+        ->join('raza_mascotas','mascotas.raza','=','raza_mascotas.id_raza')
+        ->join('tipo_mascotas','mascotas.tipo','=','tipo_mascotas.id_tipo_mascota')
+        ->join('usuarios','mascotas.dueno','=','usuarios.id_usuario')
+        ->select('mascotas.id_mascota','mascotas.nombre','mascotas.genero','mascotas.descripcion','mascotas.edad','mascotas.estado','tipo_mascotas.tipo','raza_mascotas.raza','usuarios.cedula','usuarios.primer_nombre','usuarios.primer_apellido','usuarios.cedula','usuarios.usuario','usuarios.correo',)
+        ->where('mascotas.dueno','=',$request->input('dueno'))->get();
+        return response()->json($mascotas);
+    }
+
+    public function registrarAdopcion(Request $request){
+        try{
+
+            $mascota = Mascota::where('id_mascota','=',$request->input('id_mascota'))
+            ->update(['estado'=>1]);
+            if($mascota == 1){
+                return response()->json(['log'=>$mascota],200);
+            }
+            return response()->json(['log'=>'No existe registro con ese ID'],400);
+            }catch(Exception $e){
+                return response()->json(['log'=>$e],500);
+            }
+
+    }
+
+    public function realizarAdopcion(Request $request){
+        try{
+            $mascota = Mascota::where('id_mascota','=',$request->input('id_mascota'))->update(['dueno'=>$request->input('dueno')]);
+            if($mascota == 1){
+                return response()->json(['log'=>"Mascota cambiada de dueño correctamente"],200);
+            }
+        }catch(Exception $e){
+            return response()->json(['log'=>$e],500);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -102,7 +155,7 @@ class MascotaController extends Controller
         catch(Exception $e){
             return response()->json(['log'=>$e],400);
         }
-          
+
     }
 
 
@@ -133,12 +186,13 @@ class MascotaController extends Controller
 
     public function ReportMascotaPerdida(Request $request){
         try{
-            $actualizado = Mascota::where('id_mascota','=',$request->get('id_mascota'))->update(['estado'=>$request->get('estado')]);
+            $actualizado = Mascota::where('id_mascota','=',$request->get('id_mascota'))
+            ->update(['estado'=>$request->get('estado')]);
             if($actualizado ==1){
-                return response()->json(['log'=>$actualizado],200); 
+                return response()->json(['log'=>$actualizado],200);
             }
-            return response()->json(['log'=>"No existe registro con ese ID"],400); 
-            
+            return response()->json(['log'=>"No existe registro con ese ID"],400);
+
 
         }catch(Exception $e){
             return response()->json(['log'=>$e],500);
