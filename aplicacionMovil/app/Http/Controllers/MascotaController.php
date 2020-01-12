@@ -165,13 +165,13 @@ class MascotaController extends Controller
     }
 
 
-    public function getMascotasPerdidas(){
+    public function consultarPerdidas(){
         $mascotas = self::auxGetMascotas()->where('estado',0)
         ->get();
         return response()->json($mascotas);
     }
 
-    public function getMascotasAdopcion(){
+    public function consultarAdopciones(){
         $mascotas = self::auxGetMascotas()->where('estado',1)
         ->get();
         return response()->json($mascotas);
@@ -184,7 +184,7 @@ class MascotaController extends Controller
         ->join("usuarios","usuarios.id_usuario","=","mascotas.dueno");
     }
 
-    public function ReportMascotaPerdida(Request $request){
+    public function ReportarMascotaPerdida(Request $request){
         try{
             $actualizado = Mascota::where('id_mascota','=',$request->get('id_mascota'))
             ->update(['estado'=>$request->get('estado')]);
