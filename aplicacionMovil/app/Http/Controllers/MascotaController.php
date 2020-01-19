@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mascota;
+use App\Usuario;
 use Illuminate\Http\Request;
 use DB;
 
@@ -83,8 +84,12 @@ class MascotaController extends Controller
         ->join('tipo_mascotas','mascotas.tipo','=','tipo_mascotas.id_tipo_mascota')
         ->join('usuarios','mascotas.dueno','=','usuarios.id_usuario')
         ->select('mascotas.id_mascota','mascotas.nombre','mascotas.genero','mascotas.descripcion','mascotas.edad','mascotas.estado','tipo_mascotas.tipo','raza_mascotas.raza','usuarios.cedula','usuarios.primer_nombre','usuarios.primer_apellido','usuarios.cedula','usuarios.usuario','usuarios.correo',)
-        ->where('mascotas.dueno','=',$request->input('dueno'))->get();
-        return response()->json($mascotas);
+        ->where('mascotas.dueno','=',$request->input('dueno'));
+        if($request->get("busqueda")!=null && $request->get("busqueda")!=""){
+            $mascotas = $mascotas->where('tipo_mascotas.tipo','like',"%".$request->get("busqueda")."%")->get();
+            return response()->json($mascotas);
+        }
+        return response()->json($mascotas->get());
     }
 
     public function registrarAdopcion(Request $request){
@@ -104,9 +109,13 @@ class MascotaController extends Controller
 
     public function realizarAdopcion(Request $request){
         try{
-            $mascota = Mascota::where('id_mascota','=',$request->input('id_mascota'))->update(['dueno'=>$request->input('dueno')]);
+            $user = Usuario::Where("cedula","=",$request->input('dueno'))->first();
+            if($user==null){
+                return response()->json(['log'=>"El Usuario Ingresado No Existe!","confirm"=>false],400);
+            }
+            $mascota = Mascota::where('id_mascota','=',$request->input('id_mascota'))->update(['dueno'=> $user->id_usuario]);
             if($mascota == 1){
-                return response()->json(['log'=>"Mascota cambiada de dueño correctamente"],200);
+                return response()->json(['log'=>"Mascota cambiada de dueño correctamente","confirm"=>true],200);
             }
         }catch(Exception $e){
             return response()->json(['log'=>$e],500);
@@ -165,14 +174,14 @@ class MascotaController extends Controller
     }
 
 
-    public function consultarPerdidas(){
-        $mascotas = self::auxGetMascotas()->where('estado',0)
+    public function consultarPerdidas(Request $request){
+        $mascotas = self::auxMascotasBusq($request)->where('estado',0)
         ->get();
         return response()->json($mascotas);
     }
 
-    public function consultarAdopciones(){
-        $mascotas = self::auxGetMascotas()->where('estado',1)
+    public function consultarAdopciones(Request $request){
+        $mascotas = self::auxMascotasBusq($request)->where('estado',1)
         ->get();
         return response()->json($mascotas);
     }
@@ -184,10 +193,35 @@ class MascotaController extends Controller
         ->join("usuarios","usuarios.id_usuario","=","mascotas.dueno");
     }
 
+    public function auxMascotasBusq(Request $request)
+    {
+        $mascotas = self::auxGetMascotas();
+        if($request->get("busqueda")!=null && $request->get("busqueda")!=""){
+            return $mascotas->where('tipo_mascotas.tipo','like',"%".$request->get("busqueda")."%");  
+        }
+        return $mascotas;
+
+    }
+
     public function ReportarMascotaPerdida(Request $request){
         try{
             $actualizado = Mascota::where('id_mascota','=',$request->get('id_mascota'))
-            ->update(['estado'=>$request->get('estado')]);
+            ->update(['estado'=>0]);
+            if($actualizado ==1){
+                return response()->json(['log'=>$actualizado],200);
+            }
+            return response()->json(['log'=>"No existe registro con ese ID"],400);
+
+
+        }catch(Exception $e){
+            return response()->json(['log'=>$e],500);
+        }
+    }
+
+    public function ReportarMascotaEncontrada(Request $request){
+        try{
+            $actualizado = Mascota::where('id_mascota','=',$request->get('id_mascota'))
+            ->update(['estado'=>2]);
             if($actualizado ==1){
                 return response()->json(['log'=>$actualizado],200);
             }

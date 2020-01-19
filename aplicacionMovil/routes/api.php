@@ -38,11 +38,12 @@ Route::get('alltipos','TipoMascotaController@get_all_tipos');
 /*Api Mascota*/
 Route::get('/consultarMascotas','MascotaController@consultarMascotas');
 Route::get('/consultarMascotaPorId','MascotaController@consultarMascotaPorId');
-Route::get('/consultarMisMascotas','MascotaController@consultarMisMascotas');
+Route::post('/consultarMisMascotas','MascotaController@consultarMisMascotas');
 Route::put('/registrarAdopcion','MascotaController@registrarAdopcion');
 Route::put('/realizarAdopcion','MascotaController@realizarAdopcion');
 Route::post('registrarMascota','MascotaController@registrarMascota');
 Route::get('allmascotas','MascotaController@get_all_mascotas');
-Route::get('consultarPerdidas','MascotaController@consultarPerdidas');
-Route::get('consultarAdopciones','MascotaController@consultarAdopciones');
-Route::put('reportarMascotaPerdida ','MascotaController@ReportarMascotaPerdida');
+Route::post('consultarPerdidas','MascotaController@consultarPerdidas');
+Route::post('consultarAdopciones','MascotaController@consultarAdopciones');
+Route::put('reportarMascotaPerdida','MascotaController@ReportarMascotaPerdida');
+Route::put('reportarMascotaEncontrada','MascotaController@ReportarMascotaEncontrada');
