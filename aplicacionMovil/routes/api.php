@@ -36,6 +36,7 @@ Route::get('alltipos','TipoMascotaController@get_all_tipos');
 
 
 /*Api Mascota*/
+Route::get('/consultarPorEstado','MascotaController@consultarPorEstado');
 Route::get('/consultarMascotas','MascotaController@consultarMascotas');
 Route::get('/consultarMascotaPorId','MascotaController@consultarMascotaPorId');
 Route::post('/consultarMisMascotas','MascotaController@consultarMisMascotas');
@@ -46,4 +47,5 @@ Route::get('allmascotas','MascotaController@get_all_mascotas');
 Route::post('consultarPerdidas','MascotaController@consultarPerdidas');
 Route::post('consultarAdopciones','MascotaController@consultarAdopciones');
 Route::put('reportarMascotaPerdida','MascotaController@ReportarMascotaPerdida');
+Route::put('/cambiarEstadoMascota','MascotaController@cambiarEstadoMascota');
 Route::put('reportarMascotaEncontrada','MascotaController@ReportarMascotaEncontrada');
