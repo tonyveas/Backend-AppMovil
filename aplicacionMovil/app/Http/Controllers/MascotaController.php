@@ -66,12 +66,12 @@ class MascotaController extends Controller
 
 
     public function consultarMascotas(Request $request){
-        $mascotas = DB::table('mascotas')
+        $m = DB::table('mascotas')
         ->join('raza_mascotas','mascotas.raza','=','raza_mascotas.id_raza')
         ->join('tipo_mascotas','mascotas.tipo','=','tipo_mascotas.id_tipo_mascota')
         ->select('mascotas.id_mascota','mascotas.nombre','mascotas.genero','mascotas.descripcion','mascotas.edad','mascotas.estado','tipo_mascotas.tipo','raza_mascotas.raza')
-        ->where('mascotas.tipo','=',$request->input('tipo'))->get();
-        return response()->json($mascotas);
+        ->where('mascotas.tipo','=',$request->get('tipo'))->get();
+        return response()->json($m);
     }
 
 
@@ -102,7 +102,8 @@ class MascotaController extends Controller
             if($user==null){
                 return response()->json(['log'=>"El Usuario Ingresado No Existe!","confirm"=>false],400);
             }
-            $mascota = Mascota::where('id_mascota','=',$request->input('id_mascota'))->update(['dueno'=> $user->id_usuario]);
+            $mascota = Mascota::where('id_mascota','=',$request->input('id_mascota'))->update(['dueno'=> $user->id_usuario,'estado'=> 2]);
+
             if($mascota == 1){
                 return response()->json(['log'=>"Mascota cambiada de dueño correctamente","confirm"=>true],200);
             }
