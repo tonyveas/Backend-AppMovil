@@ -81,16 +81,7 @@ class MascotaController extends Controller
     }
 
     public function consultarMisMascotas(Request $request){
-        $mascotas = DB::table('mascotas')
-        ->join('raza_mascotas','mascotas.raza','=','raza_mascotas.id_raza')
-        ->join('tipo_mascotas','mascotas.tipo','=','tipo_mascotas.id_tipo_mascota')
-        ->join('usuarios','mascotas.dueno','=','usuarios.id_usuario')
-        ->select('mascotas.id_mascota','mascotas.nombre','mascotas.genero','mascotas.descripcion','mascotas.edad','mascotas.estado','tipo_mascotas.tipo','raza_mascotas.raza','usuarios.cedula','usuarios.primer_nombre','usuarios.primer_apellido','usuarios.cedula','usuarios.usuario','usuarios.correo',)
-        ->where('mascotas.dueno','=',$request->input('dueno'));
-        if($request->get("busqueda")!=null && $request->get("busqueda")!=""){
-            $mascotas = $mascotas->where('tipo_mascotas.tipo','like',"%".$request->get("busqueda")."%")->get();
-            return response()->json($mascotas);
-        }
+        $mascotas = self::auxMascotasBusq($request)->where('mascotas.dueno','=',$request->input('dueno'));
         return response()->json($mascotas->get());
     }
 
@@ -194,7 +185,7 @@ class MascotaController extends Controller
     {
         $mascotas = self::auxGetMascotas();
         if($request->get("busqueda")!=null && $request->get("busqueda")!=""){
-            return $mascotas->where('tipo_mascotas.tipo','like',"%".$request->get("busqueda")."%");
+            return $mascotas->where('tipo_mascotas.tipo','like',"%".$request->get("busqueda")."%")->orWhere("raza_mascotas.raza","like","%".$request->get("busqueda")."%")->orwhere("mascotas.nombre","like","%".$request->get("busqueda")."%");
         }
         return $mascotas;
 
